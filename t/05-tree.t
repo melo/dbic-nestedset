@@ -94,5 +94,40 @@ is($root->children->count, 1, 'Root has one child');
 is($root->subtree->count,  3, '... but three nodes in the subtree');
 
 
+### We never learn from our mistakes
+$grand = $grand->add_sibling_after({name => 'More unsafe sex'});
+ok($grand, 'Got yet another node');
+is($grand->name,      'Unsafe sex', '... with the expected name');
+is($grand->lft,       5,            '... and the proper lft');
+is($grand->rgt,       6,            '... and the proper rgt');
+is($grand->parent_id, $node->id,    '... and node as the parent_id');
+is($grand->depth,     2,            '... and the expected depth');
+ok(!$grand->is_root, 'The is_root() method agrees, we are not a root');
+
+is($grand->children->count, 0, 'We are childless for now');
+
+@parents = $grand->parents->all;
+@path    = $grand->path->all;
+is(scalar(@parents), 2, 'We have two parents');
+is(scalar(@path),    3, '... and the path to root is 3 nodes deep');
+
+is($parents[0]->id, $root->id,  'First parent is root');
+is($path[0]->id,    $root->id,  '... so is the first path element');
+is($path[-1]->id,   $grand->id, 'Last path element is self');
+
+$node->discard_changes;    ## refresh from db
+is($node->lft, 2, 'First born lft is 2');
+is($node->rgt, 7,
+  'First born rgt is 7 to make room for Unsafe sex and More unsafe sex');
+
+is($node->children->count, 2, 'First born has two children now');
+is($node->subtree->count,  3, '... but three nodes in the subtree');
+
+$root->discard_changes;    ## refresh from db
+is($root->lft, 1, 'Root lft is 1 as always');
+is($root->rgt, 8, 'Root rgt is 8 to make room for childs');
+
+is($root->children->count, 1, 'Root has one child');
+is($root->subtree->count,  4, '... but three nodes in the subtree');
 
 done_testing();
