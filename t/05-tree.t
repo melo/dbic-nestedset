@@ -56,5 +56,8 @@ $root->discard_changes;    ## refresh from db
 is($root->lft, 1, 'Root lft is 1 as always');
 is($root->rgt, 4, 'Root rgt is 4 to make room for first born');
 
+is($root->children->count, 1, 'We are no longer childless');
+is($root->subtree->count, 2,
+  '... and two nodes in the subtree (self counts)');
 
 done_testing();
