@@ -23,6 +23,8 @@ ok($root->is_root, 'The is_root() method agrees, we are root');
 
 is($root->children->count, 0, 'We are childless for now');
 is($root->parents->count,  0, '... and parentless (Dickens would be proud!)');
+is($root->subtree->count, 1,
+  '... but one nodes in the subtree (self counts)');
 
 my @path = $root->path->all;
 is(scalar(@path), 1,         'Path to root has length 1');
