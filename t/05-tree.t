@@ -29,4 +29,30 @@ is(scalar(@path), 1,         'Path to root has length 1');
 is($path[0]->id,  $root->id, '... and it is self');
 
 
+### First born
+my $node = $root->append_child({name => 'First born'});
+ok($node, 'Got a node');
+is($node->name,      'First born', '... with the expected name');
+is($node->lft,       2,            '... and the proper lft');
+is($node->rgt,       3,            '... and the proper rgt');
+is($node->parent_id, $root->id,    '... and root as the parent_id');
+is($node->depth,     1,            '... and the expected depth');
+ok(!$node->is_root, 'The is_root() method agrees, we are not a root');
+
+is($node->children->count, 0, 'We are childless for now');
+
+my @parents = $node->parents->all;
+@path = $node->path->all;
+is(scalar(@parents), 1, 'We have one parent');
+is(scalar(@path),    2, '... and the path to root is 2');
+
+is($parents[0]->id, $root->id, 'First parent is root');
+is($path[0]->id,    $root->id, '... so is the first path element');
+is($path[-1]->id,   $node->id, 'Last path element is self');
+
+$root->discard_changes;    ## refresh from db
+is($root->lft, 1, 'Root lft is 1 as always');
+is($root->rgt, 4, 'Root rgt is 4 to make room for first born');
+
+
 done_testing();
